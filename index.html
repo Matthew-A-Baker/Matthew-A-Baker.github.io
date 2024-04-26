@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Iterated Prisoner's Dilemma</title>
+</head>
+<body>
+    <h2>Iterated Prisoner's Dilemma Game</h2>
+    <p>Choose Cooperate or Defect each round. The game lasts for 10 rounds.</p>
+    <button onclick="userChoice('cooperate')">Cooperate</button>
+    <button onclick="userChoice('defect')">Defect</button>
+    <div id="rounds"></div>
+    <div id="liveScore">Your score: 0, Computer's score: 0</div>
+    <div id="result"></div>
+
+    <script>
+        let rounds = 1;
+        let userScore = 0;
+        let computerScore = 0;
+        let computerLastMove = 'cooperate'; // Computer starts by cooperating
+        let userLastMove = 'cooperate'; // Initialize to track user's last move, assuming cooperation initially
+
+        function calculateScores(userMove) {
+            // Computer's move is user's last move (after first round)
+            let computerMove = rounds === 1 ? 'cooperate' : userLastMove;
+
+            if (userMove === 'cooperate' && computerMove === 'cooperate') {
+                userScore += 3; // Reward
+                computerScore += 3;
+            } else if (userMove === 'defect' && computerMove === 'cooperate') {
+                userScore += 5; // Temptation
+                computerScore += 0;
+            } else if (userMove === 'cooperate' && computerMove === 'defect') {
+                userScore += 0; // Sucker
+                computerScore += 5;
+            } else { // both defect
+                userScore += 1; // Punishment
+                computerScore += 1;
+            }
+
+            // Update for next round
+            userLastMove = userMove;
+            computerLastMove = computerMove; // Reflect in UI correctly
+        }
+
+        function updateScores() {
+            document.getElementById("liveScore").innerHTML = "Your score: " + userScore + ", Computer's score: " + computerScore;
+        }
+
+        function userChoice(choice) {
+            if (rounds <= 10) {
+                calculateScores(choice);
+                updateScores(); // Update scores right after calculating
+                
+                document.getElementById("rounds").innerHTML = "Round " + rounds + ": You chose " + choice + ", Computer chose " + computerLastMove + ".";
+                rounds++;
+
+                if (rounds > 10) {
+                    let resultText = "Game over. ";
+                    resultText += "Your final score: " + userScore + ", Computer's final score: " + computerScore + ".";
+                    resultText += userScore > computerScore ? " You win!" : userScore < computerScore ? " Computer wins!" : " It's a tie!";
+                    document.getElementById("result").innerHTML = resultText;
+                }
+            } else {
+                document.getElementById("result").innerHTML += "<p>The game is already over. Refresh the page to play again.</p>";
+            }
+        }
+
+        // Initial score update for round 1
+        updateScores();
+    </script>
+</body>
+</html>
+
